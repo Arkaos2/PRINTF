@@ -6,31 +6,38 @@
 /*   By: saibelab <saibelab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 13:32:58 by saibelab          #+#    #+#             */
-/*   Updated: 2025/05/23 15:54:06 by saibelab         ###   ########.fr       */
+/*   Updated: 2025/05/27 16:55:38 by saibelab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 #include <stdio.h>
 
-
-conversion	*init_table(void)
+void	ft_putchar(char c, int *count)
 {
-	static	conversion table[] = {
-		{'d', print_decimal},
-		{'s', print_string},
-		{'i', print_decimal},
-		{'c', print_char},
-		{'u', print_unsigned},
-		{'x', print_hex_lower},
-		{'X', print_hex_upper},
-		//{'p', print_pointer},
-		{'%', print_percent},
-		{'\0', NULL}
+	write (1, &c, 1);
+	(*count)++;
+}
+
+t_conversion	*init_table(void)
+{
+	static t_conversion	table[] = {
+	{'d', print_decimal},
+	{'s', print_string},
+	{'i', print_decimal},
+	{'c', print_char},
+	{'u', print_unsigned},
+	{'x', print_hex_lower},
+	{'X', print_hex_upper},
+	{'p', print_pointer},
+	{'%', print_percent},
+	{'\0', NULL}
 	};
+
 	return (table);
 }
-conversion	*find_key(char cle, conversion *table)
+
+t_conversion	*find_key(char cle, t_conversion *table)
 {
 	int	i;
 
@@ -44,35 +51,36 @@ conversion	*find_key(char cle, conversion *table)
 	return (NULL);
 }
 
+void	write_print(int *count, char c)
+{
+	write(1, &c, 1);
+	(*count)++;
+}
+
 int	ft_printf(const char *str, ...)
 {
-	int	i;
-	va_list param;
-	conversion *table;
-	conversion	*conv;
+	int				i;
+	va_list			param;
+	t_conversion	*table;
+	t_conversion	*conv;
+	int				count;
 
+	count = 0;
 	i = 0;
 	table = init_table();
 	va_start (param, str);
-	while(str[i])
+	while (str[i])
 	{
 		if (str[i] == '%' && str[i + 1])
 		{
 			i++;
 			conv = find_key(str[i], table);
 			if (conv && conv->f)
-				conv->f(param);
+				conv->f(param, &count);
 		}
 		else
-			write(1, &str[i], 1);
+			write_print(&count, str[i]);
 		i++;
 	}
-	va_end(param);
-	return (0);
-}
-
-int main()
-{
-	int c = 27;
-	printf("%x \n", c);
+	return (va_end (param), count);
 }
