@@ -13,29 +13,24 @@
 #include "ft_printf.h"
 #include <stdio.h>
 
-void	*init_table(conversion *table)
-{
-	table[0].c = 'd';
-	table[0].f = ;
-	table[1].c = 's';
-	table[1].f = ;
-	table[2].c = 'c';
-	table[2].f = ;
-	table[3].c = 'u';
-	table[3].f = ;
-	table[4].c = 'x';
-	table[4].f = ;
-	table[5].c = 'X';
-	table[5].f = ;
-	table[6].c = 'p';
-	table[6].f = ;
-	table[7].c = '%';
-	table[7].f = ;
-	table[8].c = '\0';
-	table[8].f = 0;
-}
 
-conversion	*choosen(char cle, conversion *table)
+conversion	*init_table(void)
+{
+	static	conversion table[] = {
+		{'d', print_decimal},
+		{'s', print_string},
+		{'i', print_decimal},
+		{'c', print_char},
+		{'u', print_unsigned},
+		{'x', print_hex_lower},
+		{'X', print_hex_upper},
+		//{'p', print_pointer},
+		{'%', print_percent},
+		{'\0', NULL}
+	};
+	return (table);
+}
+conversion	*find_key(char cle, conversion *table)
 {
 	int	i;
 
@@ -43,9 +38,7 @@ conversion	*choosen(char cle, conversion *table)
 	while (table[i].c)
 	{
 		if (table[i].c == cle)
-		{
 			return (&table[i]);
-		}
 		i++;
 	}
 	return (NULL);
@@ -53,9 +46,33 @@ conversion	*choosen(char cle, conversion *table)
 
 int	ft_printf(const char *str, ...)
 {
+	int	i;
 	va_list param;
+	conversion *table;
+	conversion	*conv;
 
+	i = 0;
+	table = init_table();
+	va_start (param, str);
+	while(str[i])
+	{
+		if (str[i] == '%' && str[i + 1])
+		{
+			i++;
+			conv = find_key(str[i], table);
+			if (conv && conv->f)
+				conv->f(param);
+		}
+		else
+			write(1, &str[i], 1);
+		i++;
+	}
+	va_end(param);
+	return (0);
+}
 
-	va_start(param, str);
-
+int main()
+{
+	int c = 27;
+	printf("%x \n", c);
 }
