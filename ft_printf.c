@@ -6,7 +6,7 @@
 /*   By: saibelab <saibelab@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/23 13:32:58 by saibelab          #+#    #+#             */
-/*   Updated: 2025/05/27 16:55:38 by saibelab         ###   ########.fr       */
+/*   Updated: 2025/05/28 17:57:32 by saibelab         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,12 +51,6 @@ t_conversion	*find_key(char cle, t_conversion *table)
 	return (NULL);
 }
 
-void	write_print(int *count, char c)
-{
-	write(1, &c, 1);
-	(*count)++;
-}
-
 int	ft_printf(const char *str, ...)
 {
 	int				i;
@@ -79,7 +73,7 @@ int	ft_printf(const char *str, ...)
 				conv->f(param, &count);
 		}
 		else
-			write_print(&count, str[i]);
+			ft_putchar(str[i], &count);
 		i++;
 	}
 	return (va_end (param), count);
